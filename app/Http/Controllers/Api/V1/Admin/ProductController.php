@@ -9,7 +9,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user()->can('view_users')) {
+        if (!$request->user()->can('view_products')) {
             return response()->json(['message' => 'Accès interdit'], 403);
         } else {
             return response()->json(['message' => 'Accès autorisé'], 200);

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\AuthController;
+use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\ProductController;
 
 // Route::middleware('auth:sanctum')->group(function () {
@@ -18,7 +19,8 @@ Route::prefix('v1')->group(function () {
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('admin/logout', [AuthController::class, 'logout']);
-        Route::get('admin/dashboard', [ProductController::class, 'index']);
+        Route::get('admin/dashboard', [DashboardController::class, 'index']);
+        Route::get('admin/products', [ProductController::class, 'index']);
     });
 });
 

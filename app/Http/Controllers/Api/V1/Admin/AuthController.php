@@ -17,6 +17,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|exists:roles,name'
         ]);
 
         $user = User::create([
@@ -24,17 +25,24 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             ]);
-        $user->assignRole('product_manager');
-        $user->givePermissionTo(['create_products', 'edit_products']);
-        $permissions = $user->getAllPermissions();
-
+        $user->assignRole($request->role);
 
         $token = $user->createToken('api-token')->plainTextToken;
+
+        // if (!$user->hasRole($request->role)) {
+        //     return response()->json([
+        //         'error' => "Le rôle {$request->role} n'a pas été assigné",
+        //         'user_roles' => $user->roles->pluck('name'),
+        //     ], 400);
+        // }
+
+
         return response()->json([
-            'message' => 'Utilisateur enregistré avec succès',
-            'token' => $token,
-            'permissions' => $permissions,
-        ], 201);
+    'message' => 'Utilisateur enregistré avec succès',
+    'token' => $token,
+    'role' => $user->roles->first()->name,
+    'permissions' => $user->getAllPermissions()->pluck('name'),
+], 201);
     }
 
     public function login(Request $request)
@@ -59,6 +67,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Connexion réussie',
             'token' => $token,
+            // 'role' => $user->role->name,
             'permissions' => $permissions,
         ]);
     }

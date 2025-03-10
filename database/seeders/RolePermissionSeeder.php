@@ -38,5 +38,7 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
         $productManager->givePermissionTo(['view_products', 'create_products', 'edit_products', 'delete_products']);
+        $userManager->givePermissionTo(['view_users', 'create_users', 'edit_users', 'delete_users']);
+        $superAdmin->givePermissionTo(Permission::all());
     }
 }
