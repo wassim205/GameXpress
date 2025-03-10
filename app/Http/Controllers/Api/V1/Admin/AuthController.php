@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\V1\Admin\Controller;
 use Illuminate\Http\Request;
 use App\Models\User; // ou Admin si vous avez un modèle spécifique
 use Illuminate\Support\Facades\Hash;
@@ -24,11 +24,16 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             ]);
+        $user->assignRole('product_manager');
+        $user->givePermissionTo(['create_products', 'edit_products']);
+        $permissions = $user->getAllPermissions();
+
 
         $token = $user->createToken('api-token')->plainTextToken;
         return response()->json([
             'message' => 'Utilisateur enregistré avec succès',
             'token' => $token,
+            'permissions' => $permissions,
         ], 201);
     }
 
@@ -49,9 +54,12 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
+        $permissions = $user->getAllPermissions();
+
         return response()->json([
             'message' => 'Connexion réussie',
             'token' => $token,
+            'permissions' => $permissions,
         ]);
     }
 
