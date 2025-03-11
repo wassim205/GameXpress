@@ -10,15 +10,15 @@ class DashboardController
     {
         if (!$request->user()->can('view_dashboard')) {
             return response()->json([
-                'total_products' => 100,
-                'total_users' => 50,
-                'total_orders' => 30,
+                'message' => 'You do not have permission to view the dashboard',
             ]);
         }
         else {
             return response()->json([
-                'message' => 'You do not have permission to view the dashboard',
-                ]);
+                'total_products' => 100,
+                'total_users' => 50,
+                'total_orders' => 30,
+            ]);
         }
     }
 }

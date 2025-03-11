@@ -34,10 +34,11 @@ class RolePermissionSeeder extends Seeder
             'delete_users',
         ];
 
+
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
-        $productManager->givePermissionTo(['view_products', 'create_products', 'edit_products', 'delete_products']);
+        $productManager->givePermissionTo(['view_products', 'create_products', 'edit_products', 'delete_products', 'view_categories', 'create_categories', 'edit_categories', 'delete_categories']);
         $userManager->givePermissionTo(['view_users', 'create_users', 'edit_users', 'delete_users']);
         $superAdmin->givePermissionTo(Permission::all());
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Api\V1\Admin\Controller;
+use App\Notifications\StockLowNotification;
 use Illuminate\Http\Request;
 use App\Models\User; // ou Admin si vous avez un modèle spécifique
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +36,7 @@ class AuthController extends Controller
         //         'user_roles' => $user->roles->pluck('name'),
         //     ], 400);
         // }
-
+        // $user->notify(new StockLowNotification($product));
 
         return response()->json([
     'message' => 'Utilisateur enregistré avec succès',
@@ -71,7 +72,6 @@ class AuthController extends Controller
             'permissions' => $permissions,
         ]);
     }
-
     public function logout(Request $request)
     {
         // Révoquer tous les tokens de l'utilisateur connecté
