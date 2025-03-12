@@ -21,6 +21,12 @@ Route::prefix('v1')->group(function () {
         Route::post('admin/logout', [AuthController::class, 'logout']);
         Route::get('admin/dashboard', [DashboardController::class, 'index']);
         Route::get('admin/products', [ProductController::class, 'index']);
+        Route::get('admin/products/{id}', [ProductController::class, 'show']);
+        Route::post('admin/products', [ProductController::class, 'store']);
+        Route::put('admin/products/{id}', [ProductController::class, 'update']);
+        Route::delete('admin/products/{id}', [ProductController::class, 'destroy']);
+        
     });
 });
+
 
