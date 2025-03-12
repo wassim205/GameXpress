@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\V1\Admin\ProductController;
 Route::prefix('v1')->group(function () {
     Route::post('admin/register', [AuthController::class, 'register']);
     Route::post('admin/login', [AuthController::class, 'login']);
-    Route::get('admin/permissions', [ProductController::class, 'permissions']);
+    // Route::get('admin/permissions', [ProductController::class, 'permissions']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('admin/logout', [AuthController::class, 'logout']);

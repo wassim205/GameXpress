@@ -7,19 +7,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection;
 
 
 class StockLowNotification extends Notification
 {
     use Queueable;
 
-    public $product;
+    public $products;
     /**
      * Create a new notification instance.
      */
-    public function __construct(Product $product)
+    public function __construct(Collection $products)
     {
-        $this->product = $product;
+        $this->products = $products;
     }
 
     /**
@@ -37,13 +38,16 @@ class StockLowNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-       return (new MailMessage)
-    ->subject('Alerte Stock Critique')
-    ->greeting('Bonjour Admin,')
-    ->line("Le produit **{$this->product->name}** est bientôt en rupture de stock !")
-    ->line("Stock restant : **{$this->product->stock} unités**.")
-    ->action('Voir le produit', url('/admin/products/' . $this->product->id))
-    ->line('Veuillez recharger le stock dès que possible.');
+        $productNames = $this->products->take(3)->pluck('name')->toArray();
+        $moreProducts = $this->products->count() > 3 ? '...' : '';
+        $productList = implode(', ', $productNames) . " $moreProducts";
+
+        return (new MailMessage)
+            ->subject('Alerte Stock Critique')
+            ->greeting('Bonjour Admin,')
+            ->line("Les produits suivants sont bientôt en rupture de stock : **{$productList}**.")
+            ->action('Voir les produits', url('/admin/products'))
+            ->line('Veuillez recharger le stock dès que possible.');
     }
 
     /**
