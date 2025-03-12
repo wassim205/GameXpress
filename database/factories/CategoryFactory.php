@@ -19,7 +19,7 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->word; 
+        $name = $this->faker->unique()->words(2, true); 
 
         return [
             'name' => ucfirst($name),

@@ -15,14 +15,20 @@ class ProductController extends Controller
         if (!$request->user()->can('view_products')) {
             return response()->json(['message' => 'Accès interdit'], 403);
         }
+
         $emailResponse = $this->sendEmail();
+
         if ($emailResponse instanceof \Illuminate\Http\JsonResponse) {
             return $emailResponse;
         }
 
-
         $products = Product::all();
-        return response()->json(['message' => 'Accès autorisé', $products], 200);
+
+        return response()->json([
+            'message' => 'Accès autorisé',
+            'data' => $products,
+            'count' => $products->count(),
+        ], 200);
     }
 
     public function sendEmail()
