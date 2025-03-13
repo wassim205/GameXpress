@@ -1,0 +1,24 @@
+{
+	"info": {
+		"_postman_id": "a7a22683-24b5-4cad-9d89-069d6ead8e36",
+		"name": "Dashboard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42976466"
+	},
+	"item": [
+		{
+			"name": "Dashboard",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}dashboard",
+					"host": [
+						"{{url}}dashboard"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
