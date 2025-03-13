@@ -13,17 +13,17 @@ class CategoryController
         if (!$request->user()->can('view_categories')) {
             return response()->json([
                 'message' => 'You do not have permission to view categories',
-            ]);
+            ], 403);
         } else {
             $categories = Category::all();
             if ($categories->isNotEmpty()) {
                 return response()->json([
                     'categories' => $categories,
-                ]);
+                ], 200);
             } else {
                 return response()->json([
                     'message' => 'No categories found',
-                ]);
+                ], 404);
             }
         }
     }
@@ -33,17 +33,17 @@ class CategoryController
         if (!$request->user()->can('view_categories')) {
             return response()->json([
                 'message' => 'You do not have permission to view categories',
-            ]);
+            ], 403);
         } else {
-            $categories = Category::find($id);
-            if ($categories) {
+            $categorie = Category::find($id);
+            if ($categorie) {
                 return response()->json([
-                    'categories' => $categories,
-                ]);
+                    'category' => $categorie,
+                ], 200);
             } else {
                 return response()->json([
                     'message' => 'No categories found',
-                ]);
+                ], 404);
             }
         }
     }
@@ -53,7 +53,7 @@ class CategoryController
         if (!$request->user()->can('create_categories')) {
             return response()->json([
                 'message' => 'You do not have permission to create categories',
-            ]);
+            ], 403);
         } else {
             $request->validate(
                 [
@@ -64,7 +64,7 @@ class CategoryController
             $category = Category::create($request->all());
             return response()->json([
                 'category' => $category,
-            ]);
+            ], 201);
         }
     }
 
@@ -74,18 +74,18 @@ class CategoryController
         if (!$request->user()->can('edit_categories')) {
             return response()->json([
                 'message' => 'You do not have permission to update categories',
-            ]);
+            ], 403);
         } else {
             $category = Category::find($id);
             if ($category) {
                 $category->update($request->all());
                 return response()->json([
                     'category' => $category,
-                ]);
+                ], 200);
             } else {
                 return response()->json([
                     'message' => 'No category found',
-                ]);
+                ], 404);
             }
         }
     }
@@ -95,18 +95,18 @@ class CategoryController
         if (!$request->user()->can('delete_categories')) {
             return response()->json([
                 'message' => 'You do not have permission to delete categories',
-            ]);
+            ], 403);
         } else {
             $category = Category::find($id);
             if ($category) {
                 $category->delete();
                 return response()->json([
                     'message' => 'Category deleted successfully',
-                ]);
+                ], 200);
             } else {
                 return response()->json([
                     'message' => 'No category found',
-                ]);
+                ], 404);
             }
         }
     }
