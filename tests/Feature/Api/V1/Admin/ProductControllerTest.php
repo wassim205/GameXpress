@@ -13,23 +13,24 @@ class ProductControllerTest extends TestCase
 {
     use DatabaseTransactions;
     private $user;
+    private $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->admin = User::factory()->create()->assignRole('super_admin');
         $this->user = User::factory()->create()->assignRole('product_manager');
     }
 
     /** @test */
     public function it_can_list_all_products()
     {
-        // $user = User::factory()->create()->assignRole('product_manager');
-        
         Product::factory(3)->create();
         $productsNum = Product::count();
         
         $response = $this->actingAs($this->user, 'sanctum')
         ->getJson('/api/v1/admin/products');
+        // $response->dump();
         $response->assertStatus(200)->assertJsonCount($productsNum, 'data');
     }
 

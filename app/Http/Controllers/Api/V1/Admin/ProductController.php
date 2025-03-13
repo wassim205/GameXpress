@@ -70,25 +70,56 @@ class ProductController extends Controller
             'stock' => 'required|integer',
             'slug' => 'required|string|max:255|unique:products',
             'status' => 'required',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:categories,id',
+            'images' => 'array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $product = Product::create($request->all());
-        return response()->json(['message' => 'Produit ajouté avec succès', 'product' => $product], 201);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+
+                $product->images()->create([
+                    'image_url' => $path,
+                    'is_primary' => $index === 0,
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Produit ajouté avec succès', 'product' => $product->load('images')], 201);
     }
 
     public function update(Request $request, $id)
     {
+
         if (!$request->user()->can('edit_products')) {
             return response()->json(['message' => 'Accès interdit'], 403);
         }
+
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Produit non trouvé'], 404);
         }
-        $product->update($request->all());
-        return response()->json(['message' => 'Produit mis à jour', 'product' => $product], 200);
+        $product->update($request->except('images'));
+
+        if ($request->hasFile('images')) {
+
+            $product->images()->delete();
+
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+
+                $product->images()->create([
+                    'image_url' => $path,
+                    'is_primary' => $index === 0,
+                ]);
+            }
+        }
+        return response()->json(['message' => 'Produit mis à jour', 'product' => $product->load('images')], 200);
     }
+
 
     public function destroy(Request $request, $id)
     {
