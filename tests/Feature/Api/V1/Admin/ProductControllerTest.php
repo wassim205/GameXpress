@@ -20,17 +20,6 @@ class ProductControllerTest extends TestCase
         $this->user = User::factory()->create()->assignRole('product_manager');
     }
 
-    // use RefreshDatabase;
-    /**
-     * A basic feature test example.
-     */
-    // public function test_example(): void
-    // {
-    //     $response = $this->get('/');
-
-    //     $response->assertStatus(200);
-    // }
-
     /** @test */
     public function it_can_list_all_products()
     {
