@@ -47,8 +47,11 @@ class ProductController extends Controller
         Notification::send($admin, new StockLowNotification($products));
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        if (!$request->user()->can('view_products')) {
+            return response()->json(['message' => 'Accès interdit'], 403);
+        }
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Produit non trouvé'], 404);
@@ -58,6 +61,9 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->user()->can('create_products')) {
+            return response()->json(['message' => 'Accès interdit'], 403);
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -73,6 +79,9 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (!$request->user()->can('edit_products')) {
+            return response()->json(['message' => 'Accès interdit'], 403);
+        }
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Produit non trouvé'], 404);
@@ -81,8 +90,11 @@ class ProductController extends Controller
         return response()->json(['message' => 'Produit mis à jour', 'product' => $product], 200);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        if (!$request->user()->can('delete_products')) {
+            return response()->json(['message' => 'Accès interdit'], 403);
+        }
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Produit non trouvé'], 404);
