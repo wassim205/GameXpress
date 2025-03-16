@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "b3d1ee51-2a9e-467e-913c-99d7919eb506",
+		"name": "Categories",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42976466"
+	},
+	"item": [
+		{
+			"name": "All Categories",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|RFF9RKmsiO9mi4Y974heNKRSpXzU5E1vCQR6VHyNbd5effb3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}categories",
+					"host": [
+						"{{url}}categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|RFF9RKmsiO9mi4Y974heNKRSpXzU5E1vCQR6VHyNbd5effb3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}categories/1",
+					"host": [
+						"{{url}}categories"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Store Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|RFF9RKmsiO9mi4Y974heNKRSpXzU5E1vCQR6VHyNbd5effb3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Create test\",\r\n    \"slug\": \"create-test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}categories",
+					"host": [
+						"{{url}}categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|RFF9RKmsiO9mi4Y974heNKRSpXzU5E1vCQR6VHyNbd5effb3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Testing Update\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}categories/67",
+					"host": [
+						"{{url}}categories"
+					],
+					"path": [
+						"67"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Destroy Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|RFF9RKmsiO9mi4Y974heNKRSpXzU5E1vCQR6VHyNbd5effb3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}categories/67",
+					"host": [
+						"{{url}}categories"
+					],
+					"path": [
+						"67"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

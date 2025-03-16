@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\V1\Admin\Controller;
+use App\Notifications\StockLowNotification;
 use Illuminate\Http\Request;
 use App\Models\User; // ou Admin si vous avez un modèle spécifique
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|exists:roles,name'
         ]);
 
         $user = User::create([
@@ -24,12 +26,24 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             ]);
+        $user->assignRole($request->role);
 
         $token = $user->createToken('api-token')->plainTextToken;
+
+        // if (!$user->hasRole($request->role)) {
+        //     return response()->json([
+        //         'error' => "Le rôle {$request->role} n'a pas été assigné",
+        //         'user_roles' => $user->roles->pluck('name'),
+        //     ], 400);
+        // }
+        // $user->notify(new StockLowNotification($product));
+
         return response()->json([
-            'message' => 'Utilisateur enregistré avec succès',
-            'token' => $token,
-        ], 201);
+    'message' => 'Utilisateur enregistré avec succès',
+    'token' => $token,
+    'role' => $user->roles->first()->name,
+    'permissions' => $user->getAllPermissions()->pluck('name'),
+], 201);
     }
 
     public function login(Request $request)
@@ -49,12 +63,15 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
+        $permissions = $user->getAllPermissions();
+
         return response()->json([
             'message' => 'Connexion réussie',
             'token' => $token,
+            // 'role' => $user->role->name,
+            'permissions' => $permissions,
         ]);
     }
-
     public function logout(Request $request)
     {
         // Révoquer tous les tokens de l'utilisateur connecté
