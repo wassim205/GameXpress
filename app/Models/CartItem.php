@@ -15,7 +15,7 @@ class CartItem extends Model
         'product_id',
         'quantity',
         'updated_at',
-        'exprires_at'
+        'expires_at'
     ];
 
     protected $casts = [
@@ -32,6 +32,6 @@ class CartItem extends Model
         return $this->belongsTo(Product::class);
     }
 
-    
+
 
 }
