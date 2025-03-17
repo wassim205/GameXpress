@@ -94,6 +94,3 @@ Permettre aux utilisateurs (connectés et invités) d'ajouter des produits à le
 ### **📌 Points Bonus**  
 🔹 **Intégration avec Stripe** pour le paiement en ligne  
 🔹 **Mise en cache du panier pour optimiser les performances**  
-
-
-
