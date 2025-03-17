@@ -154,8 +154,85 @@ class CartController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $cartItem = CartItem::findOrFail($id);
+
+        // Check if the cart item belongs to the current user or session
+        if (!$this->authorizeCartAction($request, $cartItem)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $cartItem->delete();
+
+        return response()->json([
+            'message' => 'Item removed from cart'
+        ]);
+    }
+
+    public function mergeCart(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
+        $sessionId = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+        
+        if (!$sessionId) {
+            return response()->json(['message' => 'No session cart to merge'], 200);
+        }
+
+        // Get all items from the session cart
+        $sessionCartItems = CartItem::where('session_id', $sessionId)->get();
+
+        foreach ($sessionCartItems as $sessionItem) {
+            // Check if the user already has this product in their cart
+            $userItem = CartItem::where('user_id', Auth::id())
+                ->where('product_id', $sessionItem->product_id)
+                ->first();
+
+            if ($userItem) {
+                // Update quantity if the item already exists
+                $userItem->quantity += $sessionItem->quantity;
+                $userItem->save();
+                $sessionItem->delete();
+            } else {
+                // Transfer the item to the user's cart
+                $sessionItem->user_id = Auth::id();
+                $sessionItem->session_id = null;
+                $sessionItem->save();
+            }
+        }
+
+        return response()->json([
+            'message' => 'Cart merged successfully'
+        ]);
+    }
+
+    /**
+     * Get or create a session ID for guest users
+     */
+    private function getSessionId(Request $request)
+    {
+        $sessionId = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+        
+        if (!$sessionId) {
+            $sessionId = Str::uuid()->toString();
+        }
+        
+        return $sessionId;
+    }
+
+    /**
+     * Check if the current user or session is authorized to modify a cart item
+     */
+    private function authorizeCartAction(Request $request, CartItem $cartItem)
+    {
+        if (Auth::check()) {
+            return $cartItem->user_id === Auth::id();
+        } else {
+            $sessionId = $this->getSessionId($request);
+            return $cartItem->session_id === $sessionId;
+        }
     }
 }
