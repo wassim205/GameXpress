@@ -44,4 +44,4 @@ Ce projet abouti offre une solution robuste et sécurisée pour l'administration
 
 ---
 
-*Pour toute question ou contribution, merci de consulter la documentation et de contacter l'équipe de développement (MOI 😅).*
+*Pour toute question ou contribution, merci de consulter la documentation et de contacter l'équipe de développement (MOI 😅 + Ayoub Jebbourri + Ilyass Etaoussi).*
