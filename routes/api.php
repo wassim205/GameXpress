@@ -46,3 +46,6 @@ Route::prefix('v1')->group(function () {
         Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
     });
 });
+
+
+Route::prefix('v2')
