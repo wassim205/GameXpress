@@ -47,14 +47,3 @@ Route::prefix('v1')->group(function () {
     });
 
 });
-
-Route::prefix('v2')->group(function () {
-    // Cart routes for auth and guest
-    Route::get('cart', [App\Http\Controllers\Api\V2\CartController::class, 'index']);
-    Route::post('cart', [App\Http\Controllers\Api\V2\CartController::class, 'store']);
-    Route::put('cart/{id}', [App\Http\Controllers\Api\V2\CartController::class, 'update']);
-    Route::delete('cart/{id}', [App\Http\Controllers\Api\V2\CartController::class, 'destroy']);
-    
-    // Route to merge guest cart with user cart after login
-    Route::post('cart/merge', [App\Http\Controllers\Api\V2\CartController::class, 'mergeCart'])->middleware('auth:sanctum');
-});
