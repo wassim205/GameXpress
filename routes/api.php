@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Admin\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\ProductController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
+use App\Http\Controllers\Api\V2\CartController;
 
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::get('/user', function (Request $request) {
@@ -52,4 +53,6 @@ Route::prefix('v2')->group(function () {
     Route::get('cart', [CartController::class, 'test']);
 });
 
+Route::prefix('v2')->group(function(){
+    Route::get('cart',[CartController::class,'index']);
 });
