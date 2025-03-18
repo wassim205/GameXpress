@@ -45,7 +45,6 @@ Route::prefix('v1')->group(function () {
         Route::put('admin/users/{id}', [UserController::class, 'update']);
         Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
     });
+
 });
 
-
-Route::prefix('v2')
