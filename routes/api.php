@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V2\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\AuthController;
@@ -46,12 +47,11 @@ Route::prefix('v1')->group(function () {
         Route::put('admin/users/{id}', [UserController::class, 'update']);
         Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
     });
-
 });
 
 Route::prefix('v2')->group(function(){
 
     Route::post('/cart', [CartController::class, 'store'])->name('user.store');
-
+    Route::get('cart', [CartController::class, 'test']);
+    Route::get('cart',[CartController::class,'index']);
 });
-
