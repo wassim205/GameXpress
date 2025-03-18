@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity')->default(1);
             $table->timestamps();
+            $table->timestamp('expires_at')->nullable();
 
             $table->foreign('user_id')
                 ->references('id')->on('users')
