@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\Admin\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\ProductController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
+use App\Http\Controllers\Api\V2\CartController;
+use App\Models\CartItem;
 
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::get('/user', function (Request $request) {
@@ -45,5 +47,4 @@ Route::prefix('v1')->group(function () {
         Route::put('admin/users/{id}', [UserController::class, 'update']);
         Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
     });
-
 });
