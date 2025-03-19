@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\DeleteProductJob;
 
 class CartController
 {
@@ -37,6 +38,8 @@ class CartController
         }
         //create expired time
         $expiresAt = Carbon::now()->addHour(48);
+        // DeleteProductJob::dispatch($cart->id)->delay(Carbon::now()->addSeconds(10));
+
 
         //check if Authntified
         if (Auth::check()) {
@@ -52,6 +55,9 @@ class CartController
                 $existingCartItem->quantity = $existingCartItem->quantity + $request->quantity;
                 $existingCartItem->save();
                 $cartItem = $existingCartItem;
+                
+                // Schedule deletion after expiration
+                DeleteProductJob::dispatch($cartItem->id)->delay($expiresAt);
             } else {
                 //create now cart
                 $cartItem = CartItem::create([
@@ -60,6 +66,9 @@ class CartController
                     'quantity' => $request->quantity,
                     'expires_at' => $expiresAt,
                 ]);
+                
+                // Schedule deletion after expiration
+                DeleteProductJob::dispatch($cartItem->id)->delay($expiresAt);
             }
         } else {
             // Get session ID from cookie or header
@@ -80,6 +89,9 @@ class CartController
                     'expires_at' => $expiresAt,
                 ]
             );
+            
+            // Schedule deletion after expiration
+            DeleteProductJob::dispatch($cartItem->id)->delay($expiresAt);
 
             // Return with cookie
             return response()->json([
