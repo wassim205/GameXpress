@@ -208,7 +208,6 @@ class CartController
 
             if ($cartItem) {
                 $cartItem->quantity = $request->quantity;
-                $cartItem->expires_at = now()->addHours(48);
                 $cartItem->save();
             } else {
                 CartItem::create([
@@ -239,7 +238,6 @@ class CartController
 
             if ($cartItem) {
                 $cartItem->quantity = $request->quantity;
-                $cartItem->expires_at = now()->addHours(48);
                 $cartItem->save();
             } else {
                 CartItem::create([
