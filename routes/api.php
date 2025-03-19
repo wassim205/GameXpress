@@ -49,15 +49,15 @@ Route::prefix('v1')->group(function () {
         Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
 
         //Orders Rotes
-        Route::get('admin/orders', [OrderController::class, 'index']);// Lister les commandes
-        Route::get('admin/orders/{id}', [OrderController::class, 'show']);// Voir une commande
-        Route::put('admin/orders/{id}/status', [OrderController::class, 'update']);//Mettre à jour le statut
-        Route::delete('admin/orders/{id}', [OrderController::class, 'destroy']);//Annuler une commande
+        Route::get('admin/orders', [OrderController::class, 'index']);
+        Route::get('admin/orders/{id}', [OrderController::class, 'show']);
+        Route::put('admin/orders/{id}/status', [OrderController::class, 'update']);
+        Route::delete('admin/orders/{id}', [OrderController::class, 'destroy']);
 
         //Pyemennt Routes
-        Route::get('admin/payments', [PaymentController::class, 'index']);//Lister les transactions
-        Route::get('admin/payments/{id}', [PaymentController::class,'show']);//Détails d’un paiement
-        Route::post('admin/payments', [PaymentController::class,'store']);//Créer un paiement
+        Route::get('admin/payments', [PaymentController::class, 'index']);
+        Route::get('admin/payments/{id}', [PaymentController::class,'show']);
+        Route::post('admin/payments', [PaymentController::class,'store']);
 
     });
 
