@@ -66,7 +66,5 @@ Route::prefix('v2')->group(function(){
     Route::get('cart',[CartController::class,'index']);
     Route::put('cart/update',[CartController::class,'update']);
     Route::delete('cart/delete',[CartController::class,'delete']);
-        Route::post('/cart', [CartController::class, 'store'])->name('user.store');
-        Route::get('cart', [CartController::class, 'test']);
-    });
+    Route::post('/cart', [CartController::class, 'store'])->name('user.store');
 });
