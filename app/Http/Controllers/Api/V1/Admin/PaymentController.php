@@ -13,17 +13,15 @@ class PaymentController extends Controller
     /**
      * Display a listing of all payments
      */
-    public function index(Request $request)
-    {
-        // if (!$request->user()->can('view_payments')) {
-        //     return response()->json(['message' => 'Accès interdit'], 403);
-        // }
-        $payments = Payment::with('order')->latest()->get();
+   public function index(Request $request)
+{
+    $payments = Payment::with('order')->whereHas('order', function ($query) {
+        $query->where('user_id', auth()->id());
+    })->latest()->get();
 
-        return response()->json([
-            'payments' => $payments
-        ]);
-    }
-
-   
+    return response()->json([
+        'payments' => $payments,
+        'message' => $payments->isNotEmpty() ? 'Payments found' : 'No payments found'
+    ], $payments->isNotEmpty() ? 200 : 404);
+}
 }
