@@ -53,6 +53,9 @@ class OrderController
         $order = Order::find($id);
         if ($order) {
             $order->update(['status' => $request->status]);
+            return response()->json([
+                'message' => 'Order status updated successfully'
+                ], 200);
         } else {
             return response()->json(['message' => 'Order not found'], 404);
         }
