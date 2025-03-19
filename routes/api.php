@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\V1\Admin\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\ProductController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
-use App\Http\Controllers\Api\V1\OrderController;
+use App\Http\Controllers\Api\V1\admin\OrderController;
 use App\Http\Controllers\Api\V2\CartController;
 use App\Http\Controllers\Api\V1\Admin\PaymentController;
 

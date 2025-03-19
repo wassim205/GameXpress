@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +13,7 @@ class OrderController
      */
     public function index()
     {
+        // dd('you are here');
         $user = Auth::user();
 
         if (!$user) {
