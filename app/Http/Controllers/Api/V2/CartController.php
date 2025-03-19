@@ -12,6 +12,9 @@ class CartController
 {
     public function index(Request $request)
     {
+        $sessionid = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+
+        $sessionCart = $sessionid ? CartItem::where('session_id', $sessionid)->get()->keyBy('product_id')->toArray() : [];
         if (Auth::guard('sanctum')->check()) {
             $user = Auth::guard('sanctum')->user();
 
@@ -19,7 +22,6 @@ class CartController
                 'user_id' => $user->id
             ]);
 
-            $sessionCart = request()->session()->get('cart', []);
 
             //fusionner le panier du session avec le panier de la base de données
 
@@ -61,7 +63,6 @@ class CartController
             ]);
         } else {
             // Utilisateur invité - retourner le panier en session
-            $sessionCart = session()->get('cart', []);
             $cartItems = [];
 
             // Récupérer les détails des produits pour les articles en session
@@ -154,11 +155,11 @@ class CartController
             $cartItem = CartItem::where('cart_id', $cart->id)
                 ->where('product_id', $request->product_id)
                 ->first();
-            if ( $request->quantity <= $product->stock) {
-                if($cartItem){
-                $cartItem->quantity = $request->quantity;
-                $cartItem->save();
-                }else{
+            if ($request->quantity <= $product->stock) {
+                if ($cartItem) {
+                    $cartItem->quantity = $request->quantity;
+                    $cartItem->save();
+                } else {
                     CartItem::create([
                         'cart_id' => $cart->id,
                         'product_id' => $request->product_id,
@@ -169,20 +170,22 @@ class CartController
                     'status' => 'success',
                     'message' => 'Panier mis à jour'
                 ]);
-            }else{
+            } else {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Quantité supérieure au stock'
                 ]);
             }
         } else {
-            $cart = request()->session()->get('cart', []);
+            $sessionid = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+
+            $cart = $sessionid ? CartItem::where('session_id', $sessionid)->get()->keyBy('product_id')->toArray() : [];
             $cartItem = $cart[$request->product_id] ?? null;
-            if($cartItem){
+            if ($cartItem) {
                 $cartItem['quantity'] = $request->quantity;
                 $cart[$request->product_id] = $cartItem;
                 request()->session()->put('cart', $cart);
-            }else{
+            } else {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Produit non trouvé dans le panier'
@@ -217,7 +220,9 @@ class CartController
                 ]);
             }
         } else {
-            $cart = request()->session()->get('cart', []);
+            $sessionid = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+
+            $cart = $sessionid ? CartItem::where('session_id', $sessionid)->get()->keyBy('product_id')->toArray() : [];
             if (isset($cart[$request->product_id])) {
                 unset($cart[$request->product_id]);
                 request()->session()->put('cart', $cart);
