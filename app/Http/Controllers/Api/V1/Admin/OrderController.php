@@ -14,18 +14,18 @@ class OrderController
     public function index()
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
         }
-        
+
         // For admin users, show all orders instead of just the user's orders
         $orders = Order::with('items.product', 'user')
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         return response()->json([
             'orders' => $orders
         ]);
@@ -34,10 +34,7 @@ class OrderController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
@@ -52,7 +49,12 @@ class OrderController
      */
     public function update(Request $request, string $id)
     {
-        //
+        $order = Order::find($id);
+        if ($order) {
+            $order->update(['status' => $request->status]);
+        } else {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
     }
 
     /**
