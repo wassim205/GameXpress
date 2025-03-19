@@ -60,12 +60,13 @@ Route::prefix('v1')->group(function () {
         Route::post('admin/payments', [PaymentController::class,'store']);
 
     });
+});
 
-    Route::prefix('v2')->group(function () {
-
+Route::prefix('v2')->group(function(){
+    Route::get('cart',[CartController::class,'index']);
+    Route::put('cart/update',[CartController::class,'update']);
+    Route::delete('cart/delete',[CartController::class,'delete']);
         Route::post('/cart', [CartController::class, 'store'])->name('user.store');
         Route::get('cart', [CartController::class, 'test']);
-        Route::get('cart', [CartController::class, 'index']);
     });
-
 });

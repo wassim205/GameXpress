@@ -110,129 +110,207 @@ class CartController
 
     public function index(Request $request)
     {
+        // Get session ID for guest users
+        $sessionId = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+
         if (Auth::guard('sanctum')->check()) {
             $user = Auth::guard('sanctum')->user();
 
-            $cart = Cart::firstOrCreate([
-                'user_id' => $user->id
-            ]);
+            // If there are guest cart items with this session ID, merge them with the user's cart
+            if ($sessionId) {
+                $sessionCartItems = CartItem::where('session_id', $sessionId)->get();
 
-            $sessionCart = request()->session()->get('cart', []);
-
-            //fusionner le panier du session avec le panier de la base de données
-
-            if (!empty($sessionCart)) {
-                foreach ($sessionCart as $productId => $item) {
-                    $cartItem = CartItem::where('cart_id', $cart->id)
-                        ->where('product_id', $productId)
+                foreach ($sessionCartItems as $sessionItem) {
+                    $cartItem = CartItem::where('user_id', $user->id)
+                        ->where('product_id', $sessionItem->product_id)
                         ->first();
+                    $product = Product::find($sessionItem->product_id);
 
-                    if ($cartItem) {
-                        $cartItem->quantity += $item['quantity'];
-                        $cartItem->save();
-                    } else {
-                        CartItem::create([
-                            'cart_id' => $cart->id,
-                            'product_id' => $productId,
-                            'quantity' => $item['quantity']
-                        ]);
+                    if ($product) {
+                        if ($cartItem && ($cartItem->quantity + $sessionItem->quantity) <= $product->stock) {
+                            $cartItem->quantity += $sessionItem->quantity;
+                            $cartItem->save();
+                        } elseif (!$cartItem && $sessionItem->quantity <= $product->stock) {
+                            CartItem::create([
+                                'user_id' => $user->id,
+                                'product_id' => $sessionItem->product_id,
+                                'quantity' => $sessionItem->quantity,
+                                'expires_at' => now()->addHours(48)
+                            ]);
+                        } else {
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => 'Quantité supérieure au stock disponible'
+                            ]);
+                        }
                     }
+                    // Delete the guest cart item after merging
+                    $sessionItem->delete();
                 }
-                // vider le panier de la session
-                request()->session()->forget('cart');
             }
 
-            $cartItems = CartItem::where('cart_id', $cart->id)->with('product')->get();
+            $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
 
             return response()->json([
                 'status' => 'success',
                 'data' => [
-                    'cart_id' => $cart->id,
-                    'cart_items' => $cartItems
+                    'cart_items' => $cartItems,
+                    'total_items' => $cartItems->count()
                 ]
             ]);
         } else {
-            // Utilisateur invité - retourner le panier en session
-            $sessionCart = session()->get('cart', []);
-            $cartItems = [];
-
-            // Récupérer les détails des produits pour les articles en session
-            if (!empty($sessionCart)) {
-                foreach ($sessionCart as $productId => $item) {
-                    $product = Product::find($productId);
-                    if ($product) {
-                        $item['product'] = $product;
-                        $cartItems[] = $item;
-                    }
-                }
-            }
+            // Guest user - retrieve cart items using session_id from database
+            $cartItems = CartItem::where('session_id', $sessionId)
+                ->with('product')
+                ->get();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Panier invité récupéré',
                 'data' => [
                     'items' => $cartItems,
-                    'total_items' => count($cartItems)
+                    'total_items' => $cartItems->count()
                 ]
             ]);
         }
     }
 
-    public function test(Request $request)
+    public function update(Request $request)
     {
+        $product = Product::find($request->product_id);
 
-        return $this->calculeTotal(
-            $request,
-            $request->tva,
-            $request->livraison,
-            $request->reduction
-        );
-    }
-    public function calculeTotal($request, $tva, $livraison, $reduction)
-    {
-        if ($request->tva < 0 || $request->tva > 100) {
+        if (!$product) {
             return response()->json([
-                'message' => 'TVA doit être compris entre 0 et 100',
-            ]);
-        }
-        if ($livraison < 0 || $livraison > 50) {
-            return response()->json([
-                'message' => 'Livraison doit être compris entre 0 et 50',
-            ]);
-        }
-        if ($reduction < 0 || $reduction > 100) {
-            return response()->json([
-                'message' => 'Réduction doit être compris entre 0 et 100',
-            ]);
+                'status' => 'error',
+                'message' => 'Produit non trouvé'
+            ], 404);
         }
 
-        if (Auth::check()) {
-            $cart = CartItem::where('user_id', Auth::id())->get();
+        if ($request->quantity <= 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La quantité doit être supérieure à zéro'
+            ], 400);
+        }
+
+        if ($request->quantity > $product->stock) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Quantité supérieure au stock disponible'
+            ], 400);
+        }
+
+        if (Auth::guard('sanctum')->check()) {
+            $user = Auth::guard('sanctum')->user();
+
+            $cartItem = CartItem::where('user_id', $user->id)
+                ->where('product_id', $request->product_id)
+                ->first();
+
+            if ($cartItem) {
+                $cartItem->quantity = $request->quantity;
+                $cartItem->expires_at = now()->addHours(48);
+                $cartItem->save();
+            } else {
+                CartItem::create([
+                    'user_id' => $user->id,
+                    'product_id' => $request->product_id,
+                    'quantity' => $request->quantity,
+                    'expires_at' => now()->addHours(48)
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Panier mis à jour'
+            ]);
         } else {
-            $sessionId = $this->getSessionId($request);
-            $cart = CartItem::where('session_id', $sessionId)->get();
-        }
-        $subTotal = 0;
-        foreach ($cart as $item) {
-            $subTotal += $item->product->price * $item->quantity;
-        }
-        $TVACost = $subTotal * $tva / 100;
-        $ReductionCost = $subTotal * $reduction / 100;
-        $total = $subTotal - $ReductionCost + $TVACost + $livraison;
+            // Get session ID for guest user
+            $sessionId = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
 
-        return response()->json([
-            'subTotal' => $subTotal,
-            'livraison' => $livraison,
-            'taux de tva' => $tva . '%',
-            'le prix va ajoute avec tva' => $TVACost,
-            'taux de réduction' => $reduction ? $reduction . '%' : '0%',
-            'le prix va soustrait avec reduction' => $ReductionCost,
-            'total' => $total,
-        ]);
+            if (!$sessionId) {
+                // Generate a new session ID if none exists
+                $sessionId = uniqid('cart_', true);
+            }
+
+            // Find or create cart item with session_id
+            $cartItem = CartItem::where('session_id', $sessionId)
+                ->where('product_id', $request->product_id)
+                ->first();
+
+            if ($cartItem) {
+                $cartItem->quantity = $request->quantity;
+                $cartItem->expires_at = now()->addHours(48);
+                $cartItem->save();
+            } else {
+                CartItem::create([
+                    'session_id' => $sessionId,
+                    'product_id' => $request->product_id,
+                    'quantity' => $request->quantity,
+                    'expires_at' => now()->addHours(48)
+                ]);
+            }
+
+            // Add a cookie to the response with the session ID
+            $response = response()->json([
+                'status' => 'success',
+                'message' => 'Panier mis à jour',
+                'session_id' => $sessionId
+            ]);
+
+            if (!$request->cookie('cart_session_id')) {
+                $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30); // 30 days
+            }
+
+            return $response;
+        }
     }
 
-    private function getSessionId(Request $request)
+    public function delete(Request $request)
     {
-        return $request->session_id;
+        if (Auth::guard('sanctum')->check()) {
+            $user = Auth::guard('sanctum')->user();
+
+            $deleted = CartItem::where('user_id', $user->id)
+                ->where('product_id', $request->product_id)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produit supprimé du panier'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produit non trouvé dans le panier'
+                ], 404);
+            }
+        } else {
+            // Get session ID for guest user
+            $sessionId = $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session');
+
+            if (!$sessionId) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Session panier non trouvée'
+                ], 404);
+            }
+
+            $deleted = CartItem::where('session_id', $sessionId)
+                ->where('product_id', $request->product_id)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produit supprimé du panier'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produit non trouvé dans le panier'
+                ], 404);
+            }
+        }
     }
 }
