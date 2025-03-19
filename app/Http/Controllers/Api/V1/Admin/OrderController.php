@@ -55,7 +55,7 @@ class OrderController
             $order->update(['status' => $request->status]);
             return response()->json([
                 'message' => 'Order status updated successfully'
-                ], 200);
+            ], 200);
         } else {
             return response()->json(['message' => 'Order not found'], 404);
         }
@@ -66,6 +66,12 @@ class OrderController
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::find($id);
+        if ($order) {
+            $order->delete();
+            return response()->json(['message' => 'Order deleted successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
     }
 }
