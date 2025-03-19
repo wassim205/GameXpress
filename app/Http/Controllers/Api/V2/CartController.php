@@ -28,15 +28,21 @@ class CartController
                     $cartItem = CartItem::where('cart_id', $cart->id)
                         ->where('product_id', $productId)
                         ->first();
+                    $product = Product::find($productId);
 
-                    if ($cartItem) {
+                    if ($cartItem && ($cartItem->quantity + $item['quantity']) <= $product->stock) {
                         $cartItem->quantity += $item['quantity'];
                         $cartItem->save();
-                    } else {
+                    } elseif (!$cartItem) {
                         CartItem::create([
                             'cart_id' => $cart->id,
                             'product_id' => $productId,
                             'quantity' => $item['quantity']
+                        ]);
+                    } else {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Erreur lors de la mise à jour du panier , quantité supérieure au stock'
                         ]);
                     }
                 }
@@ -136,5 +142,95 @@ class CartController
     private function getSessionId(Request $request)
     {
         return $request->session_id;
+    }
+
+    public function update(Request $request)
+    {
+        $product = Product::find($request->product_id);
+        if (Auth::check()) {
+            $cart = Cart::firstOrCreate([
+                'user_id' => Auth::id()
+            ]);
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $request->product_id)
+                ->first();
+            if ( $request->quantity <= $product->stock) {
+                if($cartItem){
+                $cartItem->quantity = $request->quantity;
+                $cartItem->save();
+                }else{
+                    CartItem::create([
+                        'cart_id' => $cart->id,
+                        'product_id' => $request->product_id,
+                        'quantity' => $request->quantity
+                    ]);
+                }
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Panier mis à jour'
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Quantité supérieure au stock'
+                ]);
+            }
+        } else {
+            $cart = request()->session()->get('cart', []);
+            $cartItem = $cart[$request->product_id] ?? null;
+            if($cartItem){
+                $cartItem['quantity'] = $request->quantity;
+                $cart[$request->product_id] = $cartItem;
+                request()->session()->put('cart', $cart);
+            }else{
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produit non trouvé dans le panier'
+                ]);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Panier mis à jour'
+            ]);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        if (Auth::check()) {
+            $cart = Cart::firstOrCreate([
+                'user_id' => Auth::id()
+            ]);
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $request->product_id)
+                ->first();
+            if ($cartItem) {
+                $cartItem->delete();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produit supprimé du panier'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produit non trouvé dans le panier'
+                ]);
+            }
+        } else {
+            $cart = request()->session()->get('cart', []);
+            if (isset($cart[$request->product_id])) {
+                unset($cart[$request->product_id]);
+                request()->session()->put('cart', $cart);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produit supprimé du panier'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produit non trouvé dans le panier'
+                ]);
+            }
+        }
     }
 }
