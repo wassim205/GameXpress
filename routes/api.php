@@ -29,25 +29,30 @@ Route::prefix('v1')->group(function () {
             Route::get('admin/dashboard', [DashboardController::class, 'index']);
         });
         // Products Routes
-        Route::get('admin/products', [ProductController::class, 'index']);
-        Route::get('admin/products/{id}', [ProductController::class, 'show']);
-        Route::post('admin/products', [ProductController::class, 'store']);
-        Route::put('admin/products/{id}', [ProductController::class, 'update']);
-        Route::delete('admin/products/{id}', [ProductController::class, 'destroy']);
+        Route::middleware('role:super_admin, product_manager')->group(function () {
 
-        // Categories Routes
-        Route::get('admin/categories', [CategoryController::class, 'index']);
-        Route::get('admin/categories/{id}', [CategoryController::class, 'show']);
-        Route::post('admin/categories', [CategoryController::class, 'store']);
-        Route::put('admin/categories/{id}', [CategoryController::class, 'update']);
-        Route::delete('admin/categories/{id}', [CategoryController::class, 'destroy']);
+            Route::get('admin/products', [ProductController::class, 'index']);
+            Route::get('admin/products/{id}', [ProductController::class, 'show']);
+            Route::post('admin/products', [ProductController::class, 'store']);
+            Route::put('admin/products/{id}', [ProductController::class, 'update']);
+            Route::delete('admin/products/{id}', [ProductController::class, 'destroy']);
+            // Categories Routes
+            Route::get('admin/categories', [CategoryController::class, 'index']);
+            Route::get('admin/categories/{id}', [CategoryController::class, 'show']);
+            Route::post('admin/categories', [CategoryController::class, 'store']);
+            Route::put('admin/categories/{id}', [CategoryController::class, 'update']);
+            Route::delete('admin/categories/{id}', [CategoryController::class, 'destroy']);
+        });
 
         // Users Routes
-        Route::get('admin/users', [UserController::class, 'index']);
-        Route::get('admin/users/{id}', [UserController::class, 'show']);
-        Route::post('admin/users', [UserController::class, 'store']);
-        Route::put('admin/users/{id}', [UserController::class, 'update']);
-        Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
+        Route::middleware('role:super_admin, user_manager')->group(function () {
+
+            Route::get('admin/users', [UserController::class, 'index']);
+            Route::get('admin/users/{id}', [UserController::class, 'show']);
+            Route::post('admin/users', [UserController::class, 'store']);
+            Route::put('admin/users/{id}', [UserController::class, 'update']);
+            Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
+        });
 
         //Orders Rotes
         Route::get('admin/orders', [OrderController::class, 'index']);
