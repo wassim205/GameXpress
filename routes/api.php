@@ -46,7 +46,7 @@ Route::prefix('v1')->group(function () {
 
         // Users Routes
         Route::middleware('role:super_admin, user_manager')->group(function () {
-
+            
             Route::get('admin/users', [UserController::class, 'index']);
             Route::get('admin/users/{id}', [UserController::class, 'show']);
             Route::post('admin/users', [UserController::class, 'store']);
@@ -54,16 +54,18 @@ Route::prefix('v1')->group(function () {
             Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
         });
 
-        //Orders Rotes
-        Route::get('admin/orders', [OrderController::class, 'index']);
-        Route::get('admin/orders/{id}', [OrderController::class, 'show']);
-        Route::put('admin/orders/{id}/status', [OrderController::class, 'update']);
-        Route::delete('admin/orders/{id}', [OrderController::class, 'destroy']);
+        Route::middleware('role:super_admin')->group(function () {
+            //Orders Rotes
+            Route::get('admin/orders', [OrderController::class, 'index']);
+            Route::get('admin/orders/{id}', [OrderController::class, 'show']);
+            Route::put('admin/orders/{id}/status', [OrderController::class, 'update']);
+            Route::delete('admin/orders/{id}', [OrderController::class, 'destroy']);
 
-        //Pyemennt Routes
-        Route::get('admin/payments', [PaymentController::class, 'index']);
-        Route::get('admin/payments/{id}', [PaymentController::class, 'show']);
-        Route::post('admin/payments', [PaymentController::class, 'store']);
+            //Pyemennt Routes
+            Route::get('admin/payments', [PaymentController::class, 'index']);
+            Route::get('admin/payments/{id}', [PaymentController::class, 'show']);
+            Route::post('admin/payments', [PaymentController::class, 'store']);
+        });
     });
 });
 
