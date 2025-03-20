@@ -16,7 +16,7 @@ class PaymentController extends Controller
     public function index(Request $request)
     {
         $payments = Payment::with('order')->whereHas('order', function ($query) {
-            $query->where('user_id', auth()->id());
+            $query->where('user_id', auth()->id);
         })->latest()->get();
 
         return response()->json([
