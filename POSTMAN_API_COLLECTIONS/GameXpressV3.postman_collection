@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "66974310-594b-4625-b92f-b8fa01f04b34",
-		"name": "GameXpress",
+		"_postman_id": "ae5a4883-c590-4aa9-997c-882b9c0667f8",
+		"name": "GameXpress V3",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "42976466"
+		"_exporter_id": "42977366"
 	},
 	"item": [
 		{
@@ -774,10 +774,118 @@
 					"response": []
 				},
 				{
-					"name": "test",
+					"name": "show",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "9okgWsvcKCPuRsMJRveJlBHFh1mZ8eoj8KdOcXz8f9577b63",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:8000/api/v2/cart",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v2",
+								"cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "product_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v2/cart/update",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v2",
+								"cart",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "product_id",
+									"value": "4",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v2/cart/delete",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v2",
+								"cart",
+								"delete"
+							]
+						}
 					},
 					"response": []
 				}
@@ -861,6 +969,30 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "show order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}orders/6",
+							"host": [
+								"{{url}}orders"
+							],
+							"path": [
+								"6"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "6",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -892,6 +1024,23 @@
 							"raw": "{{url}}payments",
 							"host": [
 								"{{url}}payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show payment details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}payments/1",
+							"host": [
+								"{{url}}payments"
+							],
+							"path": [
+								"1"
 							]
 						}
 					},
