@@ -19,6 +19,13 @@ use App\Http\Controllers\Api\V1\Admin\PaymentController;
 
 Route::prefix('v1')->group(function () {
 
+
+    // checkout
+    Route::post('checkout', [PaymentController::class, 'checkout']);
+
+
+
+
     Route::post('admin/register', [AuthController::class, 'register']);
     Route::post('admin/login', [AuthController::class, 'login']);
     // Route::get('admin/permissions', [ProductController::class, 'permissions']);
@@ -46,7 +53,7 @@ Route::prefix('v1')->group(function () {
 
         // Users Routes
         Route::middleware('role:super_admin, user_manager')->group(function () {
-            
+
             Route::get('admin/users', [UserController::class, 'index']);
             Route::get('admin/users/{id}', [UserController::class, 'show']);
             Route::post('admin/users', [UserController::class, 'store']);
@@ -68,6 +75,8 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
+
+
 
 Route::prefix('v2')->group(function () {
     Route::get('cart', [CartController::class, 'index']);
