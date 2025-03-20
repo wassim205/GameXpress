@@ -42,7 +42,14 @@ class OrderController
      */
     public function show(string $id)
     {
-        //
+        $order = Order::with('items.product', 'user')->find($id);
+        if ($order) {
+            return response()->json([
+                'order' => $order
+            ]);
+        } else {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
     }
 
     /**

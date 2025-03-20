@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\AuthController;
@@ -56,17 +57,15 @@ Route::prefix('v1')->group(function () {
 
         //Pyemennt Routes
         Route::get('admin/payments', [PaymentController::class, 'index']);
-        Route::get('admin/payments/{id}', [PaymentController::class,'show']);
-        Route::post('admin/payments', [PaymentController::class,'store']);
-
+        Route::get('admin/payments/{id}', [PaymentController::class, 'show']);
+        Route::post('admin/payments', [PaymentController::class, 'store']);
     });
 });
 
-Route::prefix('v2')->group(function(){
-    Route::get('cart',[CartController::class,'index']);
-    Route::put('cart/update',[CartController::class,'update']);
-    Route::delete('cart/delete',[CartController::class,'delete']);
-        Route::post('/cart', [CartController::class, 'store'])->name('user.store');
-        Route::get('cart', [CartController::class, 'test']);
-    });
+Route::prefix('v2')->group(function () {
+    Route::get('cart', [CartController::class, 'index']);
+    Route::put('cart/update', [CartController::class, 'update']);
+    Route::delete('cart/delete', [CartController::class, 'delete']);
+    Route::post('/cart', [CartController::class, 'store'])->name('user.store');
+    Route::get('cart', [CartController::class, 'test']);
 });
