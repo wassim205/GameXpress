@@ -85,4 +85,7 @@ Route::prefix('v2')->group(function () {
     Route::put('cart/update', [CartController::class, 'update']);
     Route::delete('cart/delete', [CartController::class, 'delete']);
     Route::post('/cart', [CartController::class, 'store'])->name('user.store');
+
+    //payment
+    Route::get('payment/success', [PaymentController::class, 'success']);
 });
