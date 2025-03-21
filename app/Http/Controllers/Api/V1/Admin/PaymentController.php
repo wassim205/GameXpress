@@ -92,7 +92,6 @@ class PaymentController extends Controller
             ]);
 
 
-            // return redirect($session->url);
             return response()->json(['id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -105,7 +104,6 @@ class PaymentController extends Controller
     {
         try {
             $orderId = $request->order_id ?? null;
-            // dd($orderId);
             $order = Order::where('id', $orderId)->first();
 
             if (!$order) {
@@ -188,7 +186,12 @@ class PaymentController extends Controller
             }
             
             // Get metadata from the session
-            $orderId = $session->metadata->order_id ?? null;
+            if (auth()->check()) {
+                $orderId = Order::where('user_id', auth()->id())->first();
+            } else {
+                $orderId = Order::where('session_id', $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session'));
+            }
+            // dd($session->metadata);
             $userId = $session->metadata->user_id ?? 'guest';
             
             // Find cart items
@@ -208,44 +211,49 @@ class PaymentController extends Controller
                 ], 400);
             }
             
-            // Calculate total amount
-            $totalAmount = 0;
-            foreach ($cartItems as $item) {
-                $totalAmount += $item->product->price * $item->quantity;
-            }
+            // // Calculate total amount
+            // $totalAmount = 0;
+            // foreach ($cartItems as $item) {
+            //     $totalAmount += $item->product->price * $item->quantity;
+            // }
             
-            // Create order
-            $order = Order::create([
-                'reference' => $orderId,
-                'user_id' => $userId !== 'guest' ? $userId : null,
-                'session_id' => $userId === 'guest' ? $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session') : null,
-                'total_price' => $totalAmount,
-                'status' => 'processing',
-                'shipping_address' => $request->shipping_address ?? null,
-                'payment_method' => 'stripe',
-            ]);
+            // // Create order
+            // $order = Order::create([
+            //     'reference' => $orderId,
+            //     'user_id' => $userId !== 'guest' ? $userId : null,
+            //     'session_id' => $userId === 'guest' ? $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session') : null,
+            //     'total_price' => $totalAmount,
+            //     'status' => 'processing',
+            //     'shipping_address' => $request->shipping_address ?? null,
+            //     'payment_method' => 'stripe',
+            // ]);
             
             // Create order items
-            foreach ($cartItems as $item) {
-                $order->items()->create([
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                ]);
+            // foreach ($cartItems as $item) {
+            //     $order->items()->create([
+            //         'product_id' => $item->product_id,
+            //         'quantity' => $item->quantity,
+            //         'price' => $item->product->price,
+            //     ]);
                 
                 // Update product stock
-                $product = $item->product;
-                $product->stock -= $item->quantity;
-                $product->save();
-            }
+            //     $product = $item->product;
+            //     $product->stock -= $item->quantity;
+            //     $product->save();
+            // }
             
             // Create payment record
-            Payment::create([
-                'order_id' => $order->id,
-                'amount' => $totalAmount,
-                'payment_method' => 'stripe',
+            // Payment::create([
+            //     'order_id' => $order->id,
+            //     'amount' => $totalAmount,
+            //     'payment_method' => 'stripe',
+            //     'transaction_id' => $session->payment_intent,
+            //     'status' => 'completed',
+            // ]);
+
+            Payment::where('order_id', $orderId)->update([
+                'status' => 'reussi',
                 'transaction_id' => $session->payment_intent,
-                'status' => 'completed',
             ]);
             
             // Clear cart
@@ -257,8 +265,7 @@ class PaymentController extends Controller
             
             return response()->json([
                 'status' => 'success',
-                'message' => 'Payment processed successfully',
-                'order' => $order->load('items.product')
+                'message' => 'Payment processed successfully'
             ]);
             
         } catch (\Exception $e) {

@@ -18,12 +18,12 @@ use App\Http\Controllers\Api\V1\Admin\PaymentController;
 // });
 
 Route::prefix('v1')->group(function () {
-
-
+    
+    
     // checkout
     Route::post('checkout', [PaymentController::class, 'checkout']);
-
     Route::post('/cancel', [PaymentController::class, 'cancel']);
+    Route::get('payment/success', [PaymentController::class, 'success']);
 
 
 
@@ -52,24 +52,24 @@ Route::prefix('v1')->group(function () {
             Route::put('admin/categories/{id}', [CategoryController::class, 'update']);
             Route::delete('admin/categories/{id}', [CategoryController::class, 'destroy']);
         });
-
+        
         // Users Routes
         Route::middleware('role:super_admin, user_manager')->group(function () {
-
+            
             Route::get('admin/users', [UserController::class, 'index']);
             Route::get('admin/users/{id}', [UserController::class, 'show']);
             Route::post('admin/users', [UserController::class, 'store']);
             Route::put('admin/users/{id}', [UserController::class, 'update']);
             Route::delete('admin/users/{id}', [UserController::class, 'destroy']);
         });
-
+        
         Route::middleware('role:super_admin')->group(function () {
             //Orders Rotes
             Route::get('admin/orders', [OrderController::class, 'index']);
             Route::get('admin/orders/{id}', [OrderController::class, 'show']);
             Route::put('admin/orders/{id}/status', [OrderController::class, 'update']);
             Route::delete('admin/orders/{id}', [OrderController::class, 'destroy']);
-
+            
             //Pyemennt Routes
             Route::get('admin/payments', [PaymentController::class, 'index']);
             Route::get('admin/payments/{id}', [PaymentController::class, 'show']);
@@ -85,7 +85,6 @@ Route::prefix('v2')->group(function () {
     Route::put('cart/update', [CartController::class, 'update']);
     Route::delete('cart/delete', [CartController::class, 'delete']);
     Route::post('/cart', [CartController::class, 'store'])->name('user.store');
-
+    
     //payment
-    Route::get('payment/success', [PaymentController::class, 'success']);
 });
