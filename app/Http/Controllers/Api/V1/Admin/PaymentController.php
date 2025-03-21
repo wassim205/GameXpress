@@ -24,7 +24,11 @@ class PaymentController extends Controller
 
             Stripe::setApiKey(config('services.stripe.secret'));
 
-            $products = CartItem::where('user_id', 68)->with('product')->get();
+            if(auth()->check()) {
+                $products = CartItem::where('user_id', auth()->id())->with('product')->get();
+            } else {
+                $products = CartItem::where('session_id', $request->session_id)->with('product')->get();
+            }
 
             $orderId = 'ORD-' . strtoupper(Str::random(10));
 
