@@ -22,6 +22,7 @@ class PaymentController extends Controller
 
     public function checkout(Request $request)
     {
+        // dd($request->all());
 
         try {
 
@@ -35,7 +36,7 @@ class PaymentController extends Controller
                 // $session_user = CartItem::where('session_id', $request->session_id)->first();
             }
 
-            $orderId = 'ORD-' . strtoupper(Str::random(10));
+            // $orderId = 'ORD-' . strtoupper(Str::random(10));
 
 
             $lineItems = [];
@@ -56,12 +57,14 @@ class PaymentController extends Controller
 
                 $totalAmount += $product->product->price * $product->quantity;
             }
-
+            // dd($request->session_id);
             $order = Order::create([
-                'user_id' => $user->id ?? null,
+                'user_id' => auth()->check() ? auth()->id() : null,
+                'session_id' => $request->session_id ? $request->session_id : null,
                 'total_price' => $totalAmount,
                 'status' => 'en cours',
             ]);
+            // dd($order);
 
             foreach ($products as $product) {
                 OrderItem::create([
@@ -86,7 +89,7 @@ class PaymentController extends Controller
                 'success_url' => url('/api/payment/success?session_id={CHECKOUT_SESSION_ID}'),
                 'cancel_url' => url('/api/cancel'),
                 'metadata' => [
-                    'order_id' => $orderId,
+                    'order_id' => $order->id,
                     'user_id' => $request->user_id ?? 'guest',
                 ],
             ]);
@@ -165,18 +168,18 @@ class PaymentController extends Controller
     {
         try {
             $sessionId = $request->session_id;
-            
+
             if (!$sessionId) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Session ID is required'
                 ], 400);
             }
-            
+
             // Verify the session with Stripe
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = Session::retrieve($sessionId);
-            
+
             // Check if payment was successful
             if ($session->payment_status !== 'paid') {
                 return response()->json([
@@ -184,90 +187,50 @@ class PaymentController extends Controller
                     'message' => 'Payment not completed'
                 ], 400);
             }
-            
+
             // Get metadata from the session
             if (auth()->check()) {
                 $orderId = Order::where('user_id', auth()->id())->first();
             } else {
-                $orderId = Order::where('session_id', $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session'));
+                $orderId = Order::where('session_id', $request->x_cart_session)->first();
             }
             // dd($session->metadata);
             $userId = $session->metadata->user_id ?? 'guest';
-            
+
             // Find cart items
             if ($userId !== 'guest') {
                 $cartItems = CartItem::where('user_id', $userId)->with('product')->get();
             } else {
                 // For guest users, we need the session_id from the request
-                $cartItems = CartItem::where('session_id', $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session'))
+                $cartItems = CartItem::where('session_id', $request->x_cart_session)
                     ->with('product')
                     ->get();
             }
-            
+
             if ($cartItems->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No items found in cart'
                 ], 400);
             }
-            
-            // // Calculate total amount
-            // $totalAmount = 0;
-            // foreach ($cartItems as $item) {
-            //     $totalAmount += $item->product->price * $item->quantity;
-            // }
-            
-            // // Create order
-            // $order = Order::create([
-            //     'reference' => $orderId,
-            //     'user_id' => $userId !== 'guest' ? $userId : null,
-            //     'session_id' => $userId === 'guest' ? $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session') : null,
-            //     'total_price' => $totalAmount,
-            //     'status' => 'processing',
-            //     'shipping_address' => $request->shipping_address ?? null,
-            //     'payment_method' => 'stripe',
-            // ]);
-            
-            // Create order items
-            // foreach ($cartItems as $item) {
-            //     $order->items()->create([
-            //         'product_id' => $item->product_id,
-            //         'quantity' => $item->quantity,
-            //         'price' => $item->product->price,
-            //     ]);
-                
-                // Update product stock
-            //     $product = $item->product;
-            //     $product->stock -= $item->quantity;
-            //     $product->save();
-            // }
-            
-            // Create payment record
-            // Payment::create([
-            //     'order_id' => $order->id,
-            //     'amount' => $totalAmount,
-            //     'payment_method' => 'stripe',
-            //     'transaction_id' => $session->payment_intent,
-            //     'status' => 'completed',
-            // ]);
 
-            Payment::where('order_id', $orderId)->update([
+            // dd($request->all());
+            Payment::where('order_id', $orderId->id)->update([
                 'status' => 'reussi',
                 'transaction_id' => $session->payment_intent,
             ]);
-            
+
             // Clear cart
             if ($userId !== 'guest') {
                 CartItem::where('user_id', $userId)->delete();
             } else {
                 CartItem::where('session_id', $request->cookie('cart_session_id') ?? $request->header('X-Cart-Session'))->delete();
             }
-            
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Payment processed successfully'
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
