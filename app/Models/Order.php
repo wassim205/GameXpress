@@ -30,7 +30,7 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-    
+
     /**
      * Get the payment associated with the order
      */
