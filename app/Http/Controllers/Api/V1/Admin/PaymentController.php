@@ -72,6 +72,9 @@ class PaymentController extends Controller
             // create payment in database
 
 
+            // Send email to user with order details
+            
+
             // return redirect($session->url);
             return response()->json(['id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
