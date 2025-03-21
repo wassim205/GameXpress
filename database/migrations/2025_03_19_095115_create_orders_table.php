@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->nullable();
             $table->decimal('total_price', 10, 2);
             $table->enum('status', ['en attente', 'en cours', 'expediee', 'annulee'])->default('en attente');
             $table->timestamps();

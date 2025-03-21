@@ -23,6 +23,8 @@ Route::prefix('v1')->group(function () {
     // checkout
     Route::post('checkout', [PaymentController::class, 'checkout']);
 
+    Route::post('/cancel', [PaymentController::class, 'cancel']);
+
 
 
 
