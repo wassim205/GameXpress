@@ -30,14 +30,6 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        // if (!$user->hasRole($request->role)) {
-        //     return response()->json([
-        //         'error' => "Le rôle {$request->role} n'a pas été assigné",
-        //         'user_roles' => $user->roles->pluck('name'),
-        //     ], 400);
-        // }
-        // $user->notify(new StockLowNotification($product));
-
         return response()->json([
     'message' => 'Utilisateur enregistré avec succès',
     'token' => $token,
@@ -68,7 +60,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Connexion réussie',
             'token' => $token,
-            // 'role' => $user->role->name,
+            'user' => $user,
+            // 'role' => $user->role->first()->name,
             'permissions' => $permissions,
         ]);
     }
