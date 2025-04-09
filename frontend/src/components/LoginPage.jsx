@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/apiService";
 import { AuthContext } from "../context/AuthContext";
+// import { toast } from "react-toastify";
+import { toast } from "./NotificationProvider";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -11,29 +13,27 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  const user = { email, password };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await api.post("v1/admin/login", { email, password });
-
       localStorage.setItem("token", response.data.token);
       login(response.data.user);
-      console.log(response.data);
-
-      // login(response.data.user);
+      
+      toast.success(response.data.message);
+    
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
+      // console.error("Login error:", error);
+      toast.error("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-g  radient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden">
         <div className="px-6 py-8">
           <div className="text-center mb-10">
@@ -136,6 +136,7 @@ const LoginPage = () => {
             <div>
               <button
                 type="submit"
+                disabled={loading}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
@@ -152,7 +153,7 @@ const LoginPage = () => {
                     />
                   </svg>
                 </span>
-                Sign in
+                {loading ? "Signing in..." : "Sign in"}
               </button>
             </div>
           </form>

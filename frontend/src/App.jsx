@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { RouterProvider } from "react-router-dom";
+import { router } from "./Routes/Router";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./components/NotificationProvider";
 
-function App() {
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/toastStyles.css";
 
+const App = () => {
   return (
-    <>
-      <h1 className='text-red-500'>hEloooo</h1>
-    </>
-  )
-}
+    <AuthProvider>
+      <NotificationProvider>
+        <RouterProvider router={router} />
+      </NotificationProvider>
+    </AuthProvider>
+  );
+};
 
-export default App
+export default App;

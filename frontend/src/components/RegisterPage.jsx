@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../services/apiService";
 import axios from "axios";
+import { toast } from "./NotificationProvider";
 
 
 const RegisterPage = () => {
@@ -14,16 +15,19 @@ const RegisterPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await api.post("v1/admin/register", formData);
-      localStorage.setItem("token", response.data.token);
-      console.log("Registration successful:", response.data);
-      navigate('/dashboard', { replace: true });
-    } catch (error) {
-      console.error("Registration error:", error);
+    localStorage.setItem("token", response.data.token);
+    // console.log("Registration successful:", response.data);
+    toast.success("Account created successfully!");
+    navigate('/dashboard', { replace: true });
+  } catch (error) {
+    // console.error("Registration error:", error);
+    toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
