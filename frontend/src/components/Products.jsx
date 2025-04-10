@@ -20,7 +20,7 @@ import {
   Loader,
 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-
+// import Sidebar from "./SideBar";
 // Modal component for reuse
 const Modal = ({ isOpen, onClose, title, children }) => {
   return (
@@ -287,21 +287,16 @@ const Products = () => {
       };
 
       const response = await api.get("v1/admin/products", { params });
-      // console.log("API Response:", response); // Log the API response
 
       const products = response.data.data.data ?? [];
-      // console.log(products);
 
       const totalPages = response.data.meta.total || 1;
       const CurrentPage = response.data.meta.current_page || 1;
-      // const lastPage = response.meta.last_page || 1;
 
       setProducts(products);
       setCurrentPage(CurrentPage);
       setTotalPages(totalPages);
-      // setSortField(lastPage);
     } catch (error) {
-      console.log(error);
       
       toast.error("Failed to fetch products");
       setProducts([]);
@@ -690,7 +685,6 @@ const Products = () => {
               ) : (
                 Array.isArray(products) &&
                 products.map((product) => {
-                  // console.log("rendering product:", product);
                   return (
                     <tr key={product.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

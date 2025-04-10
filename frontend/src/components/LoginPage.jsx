@@ -25,7 +25,6 @@ const LoginPage = () => {
     
       navigate("/dashboard");
     } catch (error) {
-      // console.error("Login error:", error);
       toast.error("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);

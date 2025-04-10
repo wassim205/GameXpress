@@ -4,7 +4,6 @@ import api from "../services/apiService";
 import axios from "axios";
 import { toast } from "./NotificationProvider";
 
-
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -21,13 +20,11 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       const response = await api.post("v1/admin/register", formData);
-    localStorage.setItem("token", response.data.token);
-    // console.log("Registration successful:", response.data);
-    toast.success("Account created successfully!");
-    navigate('/dashboard', { replace: true });
-  } catch (error) {
-    // console.error("Registration error:", error);
-    toast.error("Registration failed. Please try again.");
+      localStorage.setItem("token", response.data.token);
+      toast.success("Account created successfully!");
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

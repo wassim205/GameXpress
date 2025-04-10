@@ -7,12 +7,12 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("ProtectedRoute user:", user);
+    // console.log("ProtectedRoute user:", user);
     if (!user) {
-      console.log("User not found, redirecting to login...");
+      // console.log("User not found, redirecting to login...");
     }
     if (user) {
-      console.log("User keys:", Object.keys(user));
+      // console.log("User keys:", Object.keys(user));
     }
   }, [user]);
 
