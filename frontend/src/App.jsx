@@ -8,11 +8,11 @@ import "./styles/toastStyles.css";
 
 const App = () => {
   return (
-    <AuthProvider>
-      <NotificationProvider>
+    <NotificationProvider>
+      <AuthProvider>
         <RouterProvider router={router} />
-      </NotificationProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </NotificationProvider>
   );
 };
 

@@ -37,7 +37,7 @@ const StatCard = ({ icon, title, value, color }) => (
 );
 
 const Dashboard = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stats, setStats] = useState({
@@ -50,6 +50,11 @@ const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
 
   useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     const fetchStats = async () => {
       try {
         const response = await api.get("v1/admin/dashboard", {
@@ -70,7 +75,11 @@ const Dashboard = () => {
     };
 
     fetchStats();
-  }, []);
+  }, [user, navigate]);
+
+  if (!user) {
+    return null;
+  }
 
   const handleLogout = async () => {
     navigate("/logout");

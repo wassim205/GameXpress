@@ -40,6 +40,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // 'product_manager' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
+        // 'user_manager' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
+        // 'super_admin' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
     ],
 
     /*

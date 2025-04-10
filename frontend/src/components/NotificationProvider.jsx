@@ -7,22 +7,30 @@ import "react-toastify/dist/ReactToastify.css";
 export const toast = {
   success: (message) => {
     toastify.success(<Toast type="success" message={message} />, {
-      className: "toast-success"
+      className: "toast-success",
+      // autoClose: 2000,
+      closeOnClick : true,
     });
   },
   error: (message) => {
     toastify.error(<Toast type="error" message={message} />, {
-      className: "toast-error"
+      className: "toast-error",
+      // autoClose: 2000,
+      closeOnClick : true,
     });
   },
   info: (message) => {
     toastify.info(<Toast type="info" message={message} />, {
-      className: "toast-info"
+      className: "toast-info",
+      // autoClose: 2000,
+      closeOnClick : true,
     });
   },
   warning: (message) => {
     toastify.warning(<Toast type="warning" message={message} />, {
-      className: "toast-warning"
+      className: "toast-warning",
+      // autoClose: 2000,
+      closeOnClick : true,
     });
   }
 };
@@ -33,17 +41,14 @@ export const NotificationProvider = ({ children }) => {
       {children}
       <ToastContainer
         position="top-right"
-        autoClose={4000}
-        hideProgressBar
+        autoClose={2000}
+        hideProgressBar={true}
         newestOnTop
-        closeOnClick
+        closeOnClick={true}
         rtl={false}
-        pauseOnFocusLoss
-        draggable
         pauseOnHover
-        closeButton={false}
-        icon={false}
-        className="w-96"
+        // pauseOnFocusLoss
+        // draggable
       />
     </>
   );

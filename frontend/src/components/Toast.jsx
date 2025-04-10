@@ -1,7 +1,8 @@
 import React from "react";
+import { toast } from "react-toastify";
 
 export const Toast = ({ type, message }) => {
-  // Toast configurations with GameXpress theme styling
+  
   const toastConfig = {
     success: {
       bg: "bg-gradient-to-r from-indigo-600 to-indigo-500",

@@ -16,18 +16,23 @@ class ProductController extends Controller
             return response()->json(['message' => 'Accès interdit'], 403);
         }
 
-        $emailResponse = $this->sendEmail();
+        // $emailResponse = $this->sendEmail();
 
-        if ($emailResponse instanceof \Illuminate\Http\JsonResponse) {
-            return $emailResponse;
-        }
+        // if ($emailResponse instanceof \Illuminate\Http\JsonResponse) {
+        //     return $emailResponse;
+        // }
 
-        $products = Product::all();
+        $products = Product::with('category')->paginate(10);
 
         return response()->json([
             'message' => 'Accès autorisé',
             'data' => $products,
-            'count' => $products->count(),
+            'meta' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+            ],
         ], 200);
     }
 

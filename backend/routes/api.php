@@ -38,7 +38,7 @@ Route::prefix('v1')->group(function () {
             Route::get('admin/dashboard', [DashboardController::class, 'index']);
         });
         // Products Routes
-        Route::middleware('role:super_admin, product_manager')->group(function () {
+        Route::middleware('role:super_admin|product_manager')->group(function () {
 
             Route::get('admin/products', [ProductController::class, 'index']);
             Route::get('admin/products/{id}', [ProductController::class, 'show']);
@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
         });
         
         // Users Routes
-        Route::middleware('role:super_admin, user_manager')->group(function () {
+        Route::middleware('role:super_admin|user_manager')->group(function () {
             
             Route::get('admin/users', [UserController::class, 'index']);
             Route::get('admin/users/{id}', [UserController::class, 'show']);
