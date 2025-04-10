@@ -20,7 +20,6 @@ const Logout = () => {
         );
         toast.success("Logged out successfully.");
       } catch (error) {
-        // console.error("Logout error:", error);
         toast.error("Logout failed. Please try again.");
       } finally {
         localStorage.removeItem("token");
